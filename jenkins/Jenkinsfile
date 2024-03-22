@@ -1,0 +1,58 @@
+pipeline {
+    agent any
+
+    parameters {
+        string(name: 'BRANCH_NAME', description: 'Enter the branch name to deploy from (e.g., feature/counter-enhancement)')
+    }
+
+    stages {
+        stage('Checkout Code') {
+            steps {
+                git branch: '${params.BRANCH_NAME}',
+                   url: 'YOUR_GIT_REPOSITORY_URL', // Replace with your repository URL
+                   credentialsId: 'GIT_CREDENTIALS_ID' // Replace with your credentials ID
+            }
+        }
+
+        stage('Build Docker Image') {
+            steps {
+                sh 'cd ../docker'
+                sh 'docker build -t counter-service-${params.BRANCH_NAME} .' // Build with branch name in tag
+            }
+        }
+
+
+        stage('Deploy to Test Environment') {
+            steps {
+                // Assuming you have a Docker registry or a tool like docker-compose for deployment
+                // Replace with your specific deployment commands
+                sh "docker run -d -p 8080:80 counter-service-${params.BRANCH_NAME}" // Run container on port 8080
+            }
+        }
+
+        stage('Smoke Tests (Optional)') {
+            // Add smoke tests to verify basic functionality after deployment
+            steps {
+                script {
+                    // Make HTTP requests to your service and verify responses
+                    def response = httpGet requestURL: 'http://localhost:8080/', timeout: 5
+                    if (response.statusCode != 200) {
+                        error 'Smoke test failed! Service might not be healthy.'
+                    }
+                }
+            }
+        }
+    }
+
+    post {
+        always {
+            cleanWs() // Clean workspace after job execution
+        }
+        success {
+            // Optional: Send notifications on success (e.g., email, Slack)
+        }
+        failure {
+            // Optional: Send notifications on failure (e.g., email, Slack)
+        }
+    }
+}
