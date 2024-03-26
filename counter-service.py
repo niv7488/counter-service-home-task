@@ -25,7 +25,7 @@ counter = 0
 @app.before_request
 def before_request():
     """Assigns user roles to Flask-RBAC based on authentication."""
-    user = auth.current_user()  # Assuming you have authentication implemented
+    user = auth.current_user()
     if user:
         user_roles = [role for user in users if user['id'] == user['id'] for role in user['roles']]
         rbac.init_identity(user_roles)  # Assign roles to RBAC identity

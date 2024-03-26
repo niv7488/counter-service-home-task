@@ -9,14 +9,14 @@ pipeline {
         stage('Checkout Code') {
             steps {
                 git branch: '${params.BRANCH_NAME}',
-                   url: 'YOUR_GIT_REPOSITORY_URL', // Replace with your repository URL
+                   url: 'https://github.com/niv7488/counter-service-home-task.git',
                    credentialsId: 'GIT_CREDENTIALS_ID' // Replace with your credentials ID
             }
         }
 
         stage('Build Docker Image') {
             steps {
-                sh 'cd ../docker'
+                sh 'cd docker'
                 sh 'docker build -t counter-service-${params.BRANCH_NAME} .' // Build with branch name in tag
             }
         }
@@ -24,8 +24,6 @@ pipeline {
 
         stage('Deploy to Test Environment') {
             steps {
-                // Assuming you have a Docker registry or a tool like docker-compose for deployment
-                // Replace with your specific deployment commands
                 sh "docker run -d -p 8080:80 counter-service-${params.BRANCH_NAME}" // Run container on port 8080
             }
         }
