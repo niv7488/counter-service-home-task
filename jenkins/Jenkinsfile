@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     parameters {
-        string(name: 'BRANCH_NAME', description: 'Enter the branch name to deploy from (e.g., feature/counter-enhancement)')
+        string(name: 'BRANCH_NAME', description: 'Enter the branch name to deploy from (e.g., feature/counter-enhancement)', defaultValue: 'test/nivl/counterService')
     }
 
     stages {
